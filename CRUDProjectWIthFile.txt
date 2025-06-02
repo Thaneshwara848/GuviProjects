@@ -1,0 +1,163 @@
+package demoProjectwithFile;
+import java.io.*;
+import java.util.*;
+
+public class Project {
+
+    static String fileName = "Employees.txt";
+
+    // CREATE
+    public static void createEmployee(String id, String name, String age, String salary, String designation) throws IOException {
+        BufferedWriter writer = new BufferedWriter(new FileWriter(fileName, true));
+        writer.write(id + "," + name + "," + age + "," + salary + "," + designation + "\n");
+        writer.close();
+        System.out.println("				Employee created successfully.");
+    }
+
+    // READ ALL
+    public static void readAllEmployees() throws IOException {
+        BufferedReader reader = new BufferedReader(new FileReader(fileName));
+        String line;
+        System.out.println("\n					All Employee Records:");
+        while ((line = reader.readLine()) != null) {
+            String[] data = line.split(",");
+            System.out.println("ID: " + data[0]);
+            System.out.println("Name: " + data[1]);
+            System.out.println("Age: " + data[2]);
+            System.out.println("Salary: " + data[3]);
+            System.out.println("Designation: " + data[4]);
+            System.out.println("----------------------");
+        }
+        reader.close();
+    }
+
+    // UPDATE
+    public static void updateEmployee(String idToUpdate, String newName, String newAge, String newSalary, String newDesignation) throws IOException {
+        File inputFile = new File(fileName);
+        File tempFile = new File("temp.txt");
+
+        BufferedReader reader = new BufferedReader(new FileReader(inputFile));
+        BufferedWriter writer = new BufferedWriter(new FileWriter(tempFile));
+
+        String line;
+        boolean updated = false;
+        while ((line = reader.readLine()) != null) {
+            String[] data = line.split(",");
+            if (data[0].equals(idToUpdate)) {
+                writer.write(idToUpdate + "," + newName + "," + newAge + "," + newSalary + "," + newDesignation + "\n");
+                updated = true;
+            } else {
+                writer.write(line + "\n");
+            }
+        }
+
+        reader.close();
+        writer.close();
+
+        if (inputFile.delete()) {
+            tempFile.renameTo(inputFile);
+            if (updated)
+                System.out.println("				Employee updated successfully.");
+            else	
+                System.out.println("				Employee ID not found.");
+        }
+    }
+
+    // DELETE
+    public static void deleteEmployee(String idToDelete) throws IOException {
+        File inputFile = new File(fileName);
+        File tempFile = new File("temp.txt");
+
+        BufferedReader reader = new BufferedReader(new FileReader(inputFile));
+        BufferedWriter writer = new BufferedWriter(new FileWriter(tempFile));
+
+        String line;
+        boolean deleted = false;
+        while ((line = reader.readLine()) != null) {
+            String[] data = line.split(",");
+            if (!data[0].equals(idToDelete)) {
+                writer.write(line + "\n");
+            } else {
+                deleted = true;
+            }
+        }
+
+        reader.close();
+        writer.close();
+
+        if (inputFile.delete()) {
+            tempFile.renameTo(inputFile);
+            if (deleted)
+                System.out.println("				Employee deleted successfully.");
+            else
+                System.out.println("				Employee ID not found.");
+        }
+    }
+
+    // MAIN
+    public static void main(String[] args) throws IOException {
+        Scanner scanner = new Scanner(System.in);
+        int choice;
+
+        do {
+            System.out.println("\nEmployee File CRUD Operations");
+            System.out.println("1. Create Employee");
+            System.out.println("2. View All Employees");
+            System.out.println("3. Update Employee");
+            System.out.println("4. Delete Employee");
+            System.out.println("5. Exit");
+            System.out.print("Enter your choice: ");
+            choice = scanner.nextInt();
+            scanner.nextLine(); // consume newline
+
+            switch (choice) {
+                case 1:
+                    System.out.print("Enter ID: ");
+                    String id = scanner.nextLine();
+                    System.out.print("Enter Name: ");
+                    String name = scanner.nextLine();
+                    System.out.print("Enter Age: ");
+                    String age = scanner.nextLine();
+                    System.out.print("Enter Salary: ");
+                    String salary = scanner.nextLine();
+                    System.out.print("Enter Designation: ");
+                    String designation = scanner.nextLine();
+                    createEmployee(id, name, age, salary, designation);
+                    break;
+
+                case 2:
+                    readAllEmployees();
+                    break;
+
+                case 3:
+                    System.out.print("Enter ID to update: ");
+                    String uid = scanner.nextLine();
+                    System.out.print("Enter new Name: ");
+                    String newName = scanner.nextLine();
+                    System.out.print("Enter new Age: ");
+                    String newAge = scanner.nextLine();
+                    System.out.print("Enter new Salary: ");
+                    String newSalary = scanner.nextLine();
+                    System.out.print("Enter new Designation: ");
+                    String newDes = scanner.nextLine();
+                    updateEmployee(uid, newName, newAge, newSalary, newDes);
+                    break;
+
+                case 4:
+                    System.out.print("Enter ID to delete: ");
+                    String did = scanner.nextLine();
+                    deleteEmployee(did);
+                    break;
+
+                case 5:
+                    System.out.println("Exiting program.");
+                    break;
+
+                default:
+                    System.out.println("Invalid choice.");
+            }
+        } while (choice != 5);
+
+        scanner.close();
+    }
+}
